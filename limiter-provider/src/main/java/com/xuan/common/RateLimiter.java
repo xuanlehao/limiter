@@ -8,25 +8,46 @@ public class RateLimiter {
 
 	volatile long refreshTime;
 
-	final double rate;
+	double rate;
 
-	final double capacity;
+	double capacity;
 
-	double nowCapacity;
+	volatile double nowCapacity;
+
+	String timeUnit;
+
+	static int count = 0;
 
 	public RateLimiter(double rate) {
-		this.rate = rate;
-		this.capacity = rate;
-		this.nowCapacity = capacity;
-		this.refreshTime = System.currentTimeMillis();
+		this(rate, TimeUnit.SECONDS);
 	}
 
-	public synchronized boolean tryAcquire() {
+	public RateLimiter(double rate, String timeUnit) {
+		this.timeUnit = timeUnit;
+		this.refreshTime = System.currentTimeMillis();
+		this.capacity = rate;
+
+		if (TimeUnit.HOURS.equals(timeUnit)) {
+			this.rate = rate / TimeUnit.CONVERSIONUNIT/TimeUnit.CONVERSIONUNIT;
+		} else if (TimeUnit.MINUTES.equals(timeUnit)) {
+			this.rate = rate / TimeUnit.CONVERSIONUNIT;
+		} else {
+			this.rate = rate;
+		}
+
+		this.nowCapacity = capacity;
+	}
+
+	public boolean tryAcquire() {
+		return tryAcquire(1);
+	}
+
+	public boolean tryAcquire(long permits) {
 		addToken();//距离上一次时间增加令牌;
-		if (nowCapacity < 1) {
+		if (nowCapacity < permits) {
 			return false;
 		} else {
-			removeToken();//消耗令牌;
+			removeToken(permits);//消耗令牌;
 			return true;
 		}
 	}
@@ -37,32 +58,26 @@ public class RateLimiter {
 		this.refreshTime = nowTime;
 	}
 
-	public void removeToken() {
-		this.nowCapacity -= 1;
+	public void removeToken(long permits) {
+		this.nowCapacity -= permits;
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		RateLimiter l = new RateLimiter(10);
-		new Thread(() -> {
-			for (int i = 0; i < 50; i++) {
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				System.out.println("Thread one " + i + " : " + l.tryAcquire());
-			}
-		}).start();
 
-		new Thread(() -> {
-			for (int i = 0; i < 50; i++) {
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+		RateLimiter l = new RateLimiter(100000);
+		for (int i = 0; i < 1000; i++) {
+			new Thread(() -> {
+				synchronized (l) {
+					for (int j = 0; j < 200; j++) {
+						boolean flag;
+						if (flag = l.tryAcquire())
+							count++;
+						System.out.println(flag);
+					}
 				}
-				System.out.println("Thread two " + i + " : " + l.tryAcquire());
-			}
-		}).start();
+			}).start();
+		}
+		Thread.sleep(3000);
+		System.out.println(count);
 	}
 }
