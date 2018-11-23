@@ -15,7 +15,9 @@
         http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <context:component-scan base-package="com.xuan.dao"/>
+    <context:component-scan base-package="com.xuan.pojo"/>
     <context:component-scan base-package="xuan.service"/>
+    <context:component-scan base-package="com.xuan.common"/>
     <!-- 引入服务提供者配置文件 -->
     <import resource="dubbo-provider.xml" />
 
@@ -71,6 +73,6 @@
         <aop:advisor advice-ref="txAdvice" pointcut-ref="transactionPointcut"/>
     </aop:config>-->
 
-
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
 
 </beans>

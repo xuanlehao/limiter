@@ -17,6 +17,6 @@
     <dubbo:protocol name="dubbo" port="20880" />
 
     <!-- 声明需要暴露的服务接口 -->
-    <dubbo:service interface="xuan.service.HelloService" ref="helloService" timeout="3000"/>
+    <dubbo:service interface="xuan.service.HelloService" ref="helloService" timeout="3000" version="1.0.0"/>
 
 </beans>

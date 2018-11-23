@@ -1,4 +1,4 @@
-package com.xuan.common;
+package com.xuan.common.limiter;
 
 /**
  * @author Leo xuan

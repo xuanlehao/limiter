@@ -15,4 +15,7 @@ public interface UserDao {
 
 	@Select("select * from user")
 	List<UserVO> selectAll();
+
+	@Select("select * from user where id = #{id}")
+	UserVO selectById(Integer id);
 }

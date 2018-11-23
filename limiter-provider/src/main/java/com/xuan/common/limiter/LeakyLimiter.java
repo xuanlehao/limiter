@@ -1,11 +1,11 @@
-package com.xuan.common;
+package com.xuan.common.limiter;
 
 /**
  * @author Leo xuan
  * @date 2018/9/4
  */
 public class LeakyLimiter {
-
+/*
 	volatile long refreshTime;
 
 	final double rate;
@@ -53,5 +53,5 @@ public class LeakyLimiter {
 		for(int i=0;i<20;i++){
 			System.out.println(l.tryAcquire());
 		}
-	}
+	}*/
 }

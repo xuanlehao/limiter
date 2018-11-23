@@ -8,20 +8,20 @@
 
     <!-- 引入jedis的properties配置文件 -->
     <!--如果你有多个数据源需要通过<context:property-placeholder管理，且不愿意放在一个配置文件里，那么一定要加上ignore-unresolvable=“true"-->
-    <context:property-placeholder location="redis.properties" ignore-unresolvable="true" />
+    <!--<context:property-placeholder location="redis.properties" ignore-unresolvable="true" />-->
 
-    <!--shardedJedisPool的相关配置-->
+    <!--&lt;!&ndash;shardedJedisPool的相关配置&ndash;&gt;-->
 
-    <bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool"  scope="singleton">
-        <constructor-arg index="0" ref="jedisPoolConfig" />
-        <constructor-arg index="1">
-            <list>
-                <bean class="redis.clients.jedis.JedisShardInfo">
-                    <constructor-arg name="host" value="${redis.uri}" />
-                </bean>
-            </list>
-        </constructor-arg>
-    </bean>
+    <!--<bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool"  scope="singleton">-->
+        <!--<constructor-arg index="0" ref="jedisPoolConfig" />-->
+        <!--<constructor-arg index="1">-->
+            <!--<list>-->
+                <!--<bean class="redis.clients.jedis.JedisShardInfo">-->
+                    <!--<constructor-arg name="host" value="${redis.uri}" />-->
+                <!--</bean>-->
+            <!--</list>-->
+        <!--</constructor-arg>-->
+    <!--</bean>-->
 
 
 

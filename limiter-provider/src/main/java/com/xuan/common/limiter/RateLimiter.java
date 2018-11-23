@@ -1,4 +1,8 @@
-package com.xuan.common;
+package com.xuan.common.limiter;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Leo xuan
@@ -18,6 +22,8 @@ public class RateLimiter {
 
 	static int count = 0;
 
+	ReentrantLock lock = new ReentrantLock();
+
 	public RateLimiter(double rate) {
 		this(rate, TimeUnit.SECONDS);
 	}
@@ -28,7 +34,7 @@ public class RateLimiter {
 		this.capacity = rate;
 
 		if (TimeUnit.HOURS.equals(timeUnit)) {
-			this.rate = rate / TimeUnit.CONVERSIONUNIT/TimeUnit.CONVERSIONUNIT;
+			this.rate = rate / TimeUnit.CONVERSIONUNIT / TimeUnit.CONVERSIONUNIT;
 		} else if (TimeUnit.MINUTES.equals(timeUnit)) {
 			this.rate = rate / TimeUnit.CONVERSIONUNIT;
 		} else {
@@ -42,7 +48,7 @@ public class RateLimiter {
 		return tryAcquire(1);
 	}
 
-	public boolean tryAcquire(long permits) {
+	public synchronized boolean tryAcquire(long permits) {
 		addToken();//距离上一次时间增加令牌;
 		if (nowCapacity < permits) {
 			return false;
@@ -52,7 +58,7 @@ public class RateLimiter {
 		}
 	}
 
-	public void addToken() {
+  public void addToken(){
 		long nowTime = System.currentTimeMillis();
 		this.nowCapacity = Math.min(this.capacity, this.nowCapacity + (nowTime - this.refreshTime) * this.rate / 1000);
 		this.refreshTime = nowTime;
@@ -64,20 +70,29 @@ public class RateLimiter {
 
 	public static void main(String[] args) throws InterruptedException {
 
-		RateLimiter l = new RateLimiter(100000);
-		for (int i = 0; i < 1000; i++) {
+		AtomicLong total = new AtomicLong(0);
+		AtomicLong pass = new AtomicLong(0);
+		AtomicLong bolck = new AtomicLong(0);
+		long start = System.currentTimeMillis();
+		CountDownLatch countDownLatch = new CountDownLatch(50000);
+		RateLimiter l = new RateLimiter(10000,TimeUnit.SECONDS);
+		for (int i = 0; i < 50000; i++) {
 			new Thread(() -> {
-				synchronized (l) {
-					for (int j = 0; j < 200; j++) {
-						boolean flag;
-						if (flag = l.tryAcquire())
-							count++;
-						System.out.println(flag);
-					}
+				for (int j = 0; j < 1; j++) {
+					boolean flag;
+					if (flag = l.tryAcquire()){
+						count++;
+						pass.getAndAdd(1);
+					}else
+						bolck.getAndAdd(1);
+					System.out.println(flag);
 				}
+				countDownLatch.countDown();
 			}).start();
 		}
-		Thread.sleep(3000);
-		System.out.println(count);
+
+		countDownLatch.await();
+		System.out.println("pass:" + pass +"  block:" + bolck);
+		System.out.println("耗时"+(System.currentTimeMillis() - start) + "ms");
 	}
 }

@@ -11,7 +11,7 @@
     <artifactId>limiter-provider</artifactId>
     <packaging>war</packaging>
 
-    <name>xuan.web.provider Maven Webapp</name>
+    <name>xuan-web-provider Maven Webapp</name>
     <!-- FIXME change it to the project's website -->
     <url>http://www.example.com</url>
 
@@ -32,6 +32,7 @@
             <artifactId>guava</artifactId>
             <version>23.0</version>
         </dependency>
+
     </dependencies>
 
     <build>

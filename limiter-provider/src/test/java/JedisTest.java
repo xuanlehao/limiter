@@ -1,3 +1,4 @@
+import com.google.common.util.concurrent.RateLimiter;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -18,5 +19,6 @@ public class JedisTest {
 		Jedis jedis = redis.getResource();
 		jedis.set("xuan","123");
 		System.out.println(jedis.get("xuan"));
+		RateLimiter.create(100);
 	}
 }
